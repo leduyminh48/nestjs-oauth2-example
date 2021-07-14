@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ConfigModule } from '@nestjs/config';
 import { UserModule } from './user/user.module';
 import { ClientModule } from './client/client.module';
 import { AccessTokenModule } from './access-token/access-token.module';
@@ -10,6 +11,7 @@ import { OauthModule } from './oauth/oauth.module';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       autoLoadEntities: true,
       logging: true,
@@ -23,5 +25,4 @@ import { OauthModule } from './oauth/oauth.module';
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {
-}
+export class AppModule {}

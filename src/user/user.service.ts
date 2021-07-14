@@ -2,10 +2,13 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterUserDto, User } from './user.entity';
 import { Repository } from 'typeorm';
-import * as bcrypt from 'bcrypt';
+import { pbkdf2, pbkdf2Sync, randomBytes } from 'crypto';
 
 @Injectable()
 export class UserService {
+  private readonly HASH_ITERATIONS = 15000;
+  private readonly KEY_LEN = 32;
+
   constructor(
     @InjectRepository(User) private readonly _repo: Repository<User>,
   ) {}
@@ -15,7 +18,25 @@ export class UserService {
   }
 
   async register(dto: RegisterUserDto) {
-    const hash = await bcrypt.hash(dto.password, 12);
+    const salt = randomBytes(12).toString('base64');
+    const key = await new Promise<string>((resolve, reject) => {
+      pbkdf2(
+        dto.password,
+        salt,
+        this.HASH_ITERATIONS,
+        this.KEY_LEN,
+        'sha256',
+        (err, result) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(result.toString('base64'));
+          }
+        },
+      );
+    });
+
+    const hash = `pbkdf2_sha256$${this.HASH_ITERATIONS}$${salt}$${key}`;
 
     return await this._repo
       .save({
@@ -35,10 +56,25 @@ export class UserService {
       { select: ['email', 'hash', 'id', 'fullName'] },
     );
 
-    if (!user || !(await bcrypt.compare(password, user.hash))) {
+    if (!user || !this._compare(password, user.hash)) {
       throw new UnauthorizedException();
     }
     delete user.hash;
     return user;
+  }
+
+  private _compare(password, hash) {
+    if (!hash.startsWith('pbkdf2_')) {
+      return false;
+    }
+    const parts = hash.split('$');
+    const iterations = +parts[1];
+    const salt = parts[2];
+    const digest = parts[0].split('_')[1];
+    return (
+      pbkdf2Sync(password, salt, iterations, this.KEY_LEN, digest).toString(
+        'base64',
+      ) === parts[3]
+    );
   }
 }

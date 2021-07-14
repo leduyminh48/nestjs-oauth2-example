@@ -1,6 +1,6 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ClientService } from '../client/client.service';
-import {
+import OAuth2Server, {
   AuthorizationCode,
   AuthorizationCodeModel,
   Client as OAuthClient,
@@ -14,15 +14,19 @@ import { User } from '../user/user.entity';
 import { AccessTokenService } from '../access-token/access-token.service';
 import { AccessToken } from '../access-token/access-token.entity';
 
+import * as jwt from 'jsonwebtoken';
+import { ConfigService } from '@nestjs/config';
+
 @Injectable()
 export class OauthModelService
-  implements AuthorizationCodeModel, ClientCredentialsModel {
+  implements AuthorizationCodeModel, ClientCredentialsModel
+{
   constructor(
+    private configService: ConfigService,
     private clientService: ClientService,
     private authorizationCodeService: AuthorizationCodeService,
     private accessTokenService: AccessTokenService,
-  ) {
-  }
+  ) {}
 
   getClient(clientId: string, clientSecret: string) {
     return this.clientService.getClient(clientId, clientSecret).catch(() => {
@@ -42,8 +46,20 @@ export class OauthModelService
   }
 
   getAccessToken(token) {
-    /* This is where you select the token from the database where the code matches */
     return this.accessTokenService.findOne(token);
+  }
+
+  generateAccessToken(
+    client: OAuthClient,
+    user: OAuth2Server.User,
+    scope: string | string[],
+  ): Promise<string> {
+    const secret = this.configService.get('JWT_SECRET');
+    return Promise.resolve(
+      jwt.sign({ ...user }, secret, {
+        expiresIn: 1800,
+      }),
+    );
   }
 
   getRefreshToken(token) {
@@ -51,18 +67,19 @@ export class OauthModelService
   }
 
   revokeToken(token: AccessToken) {
-    return this.accessTokenService.revoke(token.accessToken).then(res => !!res);
+    return this.accessTokenService
+      .revoke(token.accessToken)
+      .then((res) => !!res);
   }
 
   saveAuthorizationCode(
-    code: Pick<AuthorizationCode,
-      'authorizationCode' | 'expiresAt' | 'redirectUri' | 'scope'>,
+    code: Pick<
+      AuthorizationCode,
+      'authorizationCode' | 'expiresAt' | 'redirectUri' | 'scope'
+    >,
     client: OAuthClient,
     user: OAuthUser,
   ) {
-    Logger.log('Call saveAuthorization code ---->');
-    console.log(code, client, user);
-
     return this.authorizationCodeService
       .save({
         authorizationCode: code.authorizationCode,
@@ -79,14 +96,18 @@ export class OauthModelService
 
   getAuthorizationCode(authorizationCode) {
     /* this is where we fetch the stored data from the code */
-    return this.authorizationCodeService.findOne(authorizationCode).then(code => {
-      delete code.redirectUri;
-      return code;
-    });
+    return this.authorizationCodeService
+      .findOne(authorizationCode)
+      .then((code) => {
+        delete code.redirectUri;
+        return code;
+      });
   }
 
   revokeAuthorizationCode(authorizationCode: AuthorizationCode) {
-    return this.authorizationCodeService.revoke(authorizationCode.authorizationCode).then(res => !!res);
+    return this.authorizationCodeService
+      .revoke(authorizationCode.authorizationCode)
+      .then((res) => !!res);
   }
 
   verifyScope(token, scope) {
