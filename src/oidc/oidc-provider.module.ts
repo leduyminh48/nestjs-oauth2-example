@@ -14,6 +14,9 @@ import { PushedAuthorizationRequest } from './entities/PushedAuthorizationReques
 import { RefreshToken } from './entities/RefreshToken.entity';
 import { RegistrationAccessToken } from './entities/RegistrationAccessToken.entity';
 import { ReplayDetection } from './entities/ReplayDetection.entity';
+import { InteractionsController } from './interactions/interactions.controller';
+import { AccountService } from './account/account.service';
+import { UserModule } from '../oauth/user/user.module';
 
 @Module({
   imports: [
@@ -31,8 +34,9 @@ import { ReplayDetection } from './entities/ReplayDetection.entity';
       RegistrationAccessToken,
       ReplayDetection,
     ]),
+    UserModule,
   ],
-  controllers: [OidcController],
-  providers: [OidcProviderService],
+  controllers: [OidcController, InteractionsController],
+  providers: [OidcProviderService, AccountService],
 })
 export class OidcProviderModule {}

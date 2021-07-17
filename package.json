@@ -34,6 +34,7 @@
     "bcrypt": "^5.0.1",
     "class-transformer": "^0.4.0",
     "class-validator": "^0.13.1",
+    "ejs": "^3.1.6",
     "express-oauth-server": "^2.0.0",
     "jsonwebtoken": "^8.5.1",
     "mysql2": "^2.2.5",
