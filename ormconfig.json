@@ -9,5 +9,5 @@
     "dist/**/*.entity{.ts,.js}"
   ],
   "synchronize": true,
-  "logging": true
+  "logging": false
 }

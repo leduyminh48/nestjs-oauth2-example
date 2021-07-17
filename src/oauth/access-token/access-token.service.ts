@@ -1,18 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AccessToken } from './access-token.entity';
+import { AccessTokenOauth } from './access-token.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class AccessTokenService {
   constructor(
-    @InjectRepository(AccessToken)
-    private readonly _repo: Repository<AccessToken>,
-  ) {
-  }
+    @InjectRepository(AccessTokenOauth)
+    private readonly _repo: Repository<AccessTokenOauth>,
+  ) {}
 
-  save(dto: Partial<AccessToken>) {
-    console.log(dto);
+  save(dto: Partial<AccessTokenOauth>) {
     return this._repo.save(dto);
   }
 

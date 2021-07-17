@@ -4,8 +4,7 @@ import { ClientDto } from './client.entity';
 
 @Controller('client')
 export class ClientController {
-  constructor(private clientService: ClientService) {
-  }
+  constructor(private clientService: ClientService) {}
 
   @Post()
   create(@Body() dto: ClientDto) {

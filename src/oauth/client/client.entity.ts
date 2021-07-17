@@ -9,7 +9,7 @@ export enum Grant {
 }
 
 @Entity()
-export class Client {
+export class ClientOauth {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 

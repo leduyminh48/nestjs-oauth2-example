@@ -1,26 +1,28 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { AuthorizationCode } from './authorization-code.entity';
+import { AuthorizationCodeOauth } from './authorization-code.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class AuthorizationCodeService {
   constructor(
-    @InjectRepository(AuthorizationCode)
-    private readonly _repo: Repository<AuthorizationCode>,
-  ) {
-  }
+    @InjectRepository(AuthorizationCodeOauth)
+    private readonly _repo: Repository<AuthorizationCodeOauth>,
+  ) {}
 
-  save(dto: Partial<AuthorizationCode>) {
+  save(dto: Partial<AuthorizationCodeOauth>) {
     return this._repo.save(dto);
   }
 
   findOne(authorizationCode) {
-    return this._repo.findOneOrFail({
-      authorizationCode,
-    }, {
-      relations: ['client', 'user'],
-    });
+    return this._repo.findOneOrFail(
+      {
+        authorizationCode,
+      },
+      {
+        relations: ['client', 'user'],
+      },
+    );
   }
 
   revoke(authorizationCode) {

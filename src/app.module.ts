@@ -3,11 +3,8 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
-import { UserModule } from './user/user.module';
-import { ClientModule } from './client/client.module';
-import { AccessTokenModule } from './access-token/access-token.module';
-import { AuthorizationCodeModule } from './authorization-code/authorization-code.module';
 import { OauthModule } from './oauth/oauth.module';
+import { OidcProviderModule } from './oidc/oidc-provider.module';
 
 @Module({
   imports: [
@@ -16,11 +13,8 @@ import { OauthModule } from './oauth/oauth.module';
       autoLoadEntities: true,
       logging: true,
     }),
-    UserModule,
-    ClientModule,
-    AccessTokenModule,
-    AuthorizationCodeModule,
     OauthModule,
+    OidcProviderModule,
   ],
   controllers: [AppController],
   providers: [AppService],

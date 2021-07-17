@@ -1,17 +1,23 @@
-import { Column, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { User } from '../user/user.entity';
-import { Client } from '../client/client.entity';
+import { ClientOauth } from '../client/client.entity';
 
 @Entity()
-export class AccessToken {
+export class AccessTokenOauth {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
   @Column('text')
   accessToken: string;
 
-  @ManyToOne(() => Client)
-  client: Client;
+  @ManyToOne(() => ClientOauth)
+  client: ClientOauth;
 
   @ManyToOne(() => User)
   user: User;

@@ -1,12 +1,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { AccessToken } from './access-token.entity';
+import { AccessTokenOauth } from './access-token.entity';
 import { AccessTokenService } from './access-token.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([AccessToken])],
+  imports: [TypeOrmModule.forFeature([AccessTokenOauth])],
   providers: [AccessTokenService],
-  exports: [AccessTokenService]
+  exports: [AccessTokenService],
 })
-export class AccessTokenModule {
-}
+export class AccessTokenModule {}

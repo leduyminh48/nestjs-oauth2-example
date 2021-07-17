@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ClientService } from '../client/client.service';
+import { ClientService } from './client/client.service';
 import OAuth2Server, {
   AuthorizationCode,
   AuthorizationCodeModel,
@@ -8,11 +8,11 @@ import OAuth2Server, {
   Token,
   User as OAuthUser,
 } from 'oauth2-server';
-import { AuthorizationCodeService } from '../authorization-code/authorization-code.service';
-import { Client } from '../client/client.entity';
-import { User } from '../user/user.entity';
-import { AccessTokenService } from '../access-token/access-token.service';
-import { AccessToken } from '../access-token/access-token.entity';
+import { AuthorizationCodeService } from './authorization-code/authorization-code.service';
+import { ClientOauth } from './client/client.entity';
+import { User } from './user/user.entity';
+import { AccessTokenService } from './access-token/access-token.service';
+import { AccessTokenOauth } from './access-token/access-token.entity';
 
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
@@ -39,9 +39,9 @@ export class OauthModelService
     const dto = {
       accessToken: token.accessToken,
       expiresAt: token.accessTokenExpiresAt,
-      client: Object.assign(new Client(), { id: client.id }),
+      client: Object.assign(new ClientOauth(), { id: client.id }),
       user: Object.assign(new User(), { id: user.id }),
-    } as Partial<AccessToken>;
+    } as Partial<AccessTokenOauth>;
     return this.accessTokenService.save(dto);
   }
 
@@ -56,7 +56,7 @@ export class OauthModelService
   ): Promise<string> {
     const secret = this.configService.get('JWT_SECRET');
     return Promise.resolve(
-      jwt.sign({ ...user }, secret, {
+      jwt.sign({ ...user, scope }, secret, {
         expiresIn: 1800,
       }),
     );
@@ -66,7 +66,7 @@ export class OauthModelService
     return new Promise((resolve) => resolve(''));
   }
 
-  revokeToken(token: AccessToken) {
+  revokeToken(token: AccessTokenOauth) {
     return this.accessTokenService
       .revoke(token.accessToken)
       .then((res) => !!res);
@@ -85,7 +85,7 @@ export class OauthModelService
         authorizationCode: code.authorizationCode,
         expiresAt: code.expiresAt,
         redirectUri: code.redirectUri,
-        client: Object.assign(new Client(), { id: client.id }),
+        client: Object.assign(new ClientOauth(), { id: client.id }),
         user: Object.assign(new User(), { id: user.id }),
       })
       .then((code) => {

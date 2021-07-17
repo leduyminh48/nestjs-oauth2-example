@@ -1,9 +1,20 @@
-import { Body, Controller, HttpCode, Logger, Post, Req, Res } from '@nestjs/common';
-import { UserService } from '../user/user.service';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  Logger,
+  Post,
+  Req,
+  Res,
+} from '@nestjs/common';
+import { UserService } from './user/user.service';
 import { AuthorizeDto } from './oauth.dto';
 import { Request, Response } from 'express';
 import { OauthServerService } from './oauth-server.service';
-import { Request as OAuth2Request, Response as OAuth2Response } from 'oauth2-server';
+import {
+  Request as OAuth2Request,
+  Response as OAuth2Response,
+} from 'oauth2-server';
 import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 
 @Controller('oauth')
@@ -11,13 +22,16 @@ export class OauthController {
   constructor(
     private userService: UserService,
     private oAuthServer: OauthServerService,
-  ) {
-  }
+  ) {}
 
   @Post('authorize')
   @HttpCode(302)
   @ApiConsumes('application/json')
-  @ApiOperation({ description: 'Authorize a client to access user data', summary: 'Authorize', tags: ['OAuth Authorize'] })
+  @ApiOperation({
+    description: 'Authorize a client to access user data',
+    summary: 'Authorize',
+    tags: ['OAuth Authorize'],
+  })
   @ApiBody({
     schema: {
       type: 'object',
@@ -58,16 +72,14 @@ export class OauthController {
   }
 
   @Post('token')
-  async token(
-    @Req() request: Request,
-    @Res() response: Response,
-  ) {
+  async token(@Req() request: Request, @Res() response: Response) {
     return this.oAuthServer.server
       .token(new OAuth2Request(request), new OAuth2Response(response), {
         requireClientAuthentication: {
           authorization_code: true,
         },
-      }).then(token => {
+      })
+      .then((token) => {
         response.send(token);
       });
   }

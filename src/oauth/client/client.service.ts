@@ -1,12 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Client, ClientDto } from './client.entity';
+import { ClientDto, ClientOauth } from './client.entity';
 import { Repository } from 'typeorm';
 
 @Injectable()
 export class ClientService {
-  constructor(@InjectRepository(Client) private _repo: Repository<Client>) {
-  }
+  constructor(
+    @InjectRepository(ClientOauth) private _repo: Repository<ClientOauth>,
+  ) {}
 
   getClient(clientId: string, clientSecret?: string) {
     if (clientSecret == null) {
