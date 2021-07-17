@@ -37,7 +37,7 @@ export class RegisterUserDto {
    * - at least 1 lowercase letter
    * - min length 8
    * **/
-  @Matches(/^(?=.*[A-Z].*)(?=.*[!@#$&*^()])(?=.*[0-9].*)(?=.*[a-z].*).{8,}$/)
+  @Matches(/^(?=.*[A-Z].*)(?=.*[!@#$&*^()\-_])(?=.*[0-9].*)(?=.*[a-z].*).{8,}$/)
   password: string;
 }
 
