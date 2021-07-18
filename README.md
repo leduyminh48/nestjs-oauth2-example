@@ -116,17 +116,17 @@ Nest is [MIT licensed](LICENSE).
 - after clicking Authorize you will be redirect to jwt.io (specified in client metadata and in auth url) with
   authorization_code in url
 - copy that code and use it to obtain token with following POST request (Basic Authorization header is composed using
-  base64Encode(client_id:client_secret))
+  base64Encode(client_id:client_secret)) replace authorization_code with ưhat you obtained from previous step
   ```bash
     curl --location --request POST 'http://localhost:3000/oidc/token' \
       --header 'Authorization: Basic Zm9vOmZvb2Jhcg==' \
       --header 'Content-Type: application/x-www-form-urlencoded' \
-      --data-urlencode 'code=p7nMRtBP_q3nggUnJmFPOIsXC-aW6dWbhpHNHpc0pe9' \
+      --data-urlencode 'code=<AUTHORIZATION_CODE_GOES_HERE>' \
       --data-urlencode 'grant_type=authorization_code' \
       --data-urlencode 'redirect_uri=https://jwt.io' \
       --data-urlencode 'code_verifier=_z9u~RxevCk0jbFOfky1xEJcT-60Wgsl2QrU8DvBaNp755VNt8P_vbMKSWn6GIUShBwS~LT5vULj7Qnmt0bk38T8aeOiG3MOLPY~0_5fxW6p3SLbyw0Px.z9JW_hqs6E'
   ```
-- response should looks liek this
+- response should looks like this
   ```json
     {
         "access_token": "RvKSmu8UjUm_USTOoJQcnxOdXy-M1_MsDPMSy1XzpZ7",
@@ -136,5 +136,5 @@ Nest is [MIT licensed](LICENSE).
         "token_type": "Bearer"
     }
   ```
-- copy id_token to jwt.io debugger and you can retrieve user_info authenticated earlier
+- copy id_token to jwt.io debugger, and you can retrieve user_info authenticated earlier
 - this flow can be implemented simply by using oidc-client library
