@@ -1,23 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Provider } from 'oidc-provider';
-import { randomBytes } from 'crypto';
 import * as jwks from '../jwks.json';
 import { TypeOrmAdapter } from './adapter/typeorm-adapter.service';
 import { AccountService } from './account/account.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class OidcProviderService {
   private readonly _oidc: Provider;
   private readonly _logger: Logger;
 
-  constructor(private accountService: AccountService) {
+  constructor(
+    private accountService: AccountService,
+    private configService: ConfigService,
+  ) {
     this._logger = new Logger('OidcProviderService');
-    this._oidc = new Provider(`https://login.epam.com`, {
+    this._oidc = new Provider(`http://localhost:3000`, {
       cookies: {
-        keys: [
-          randomBytes(32).toString('base64'),
-          randomBytes(32).toString('base64'),
-        ],
+        keys: this.configService.get('SECURE_KEY').split(':'),
       },
       jwks,
       adapter: TypeOrmAdapter,

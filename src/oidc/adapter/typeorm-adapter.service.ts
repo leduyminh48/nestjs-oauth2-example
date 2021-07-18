@@ -61,7 +61,9 @@ export class TypeOrmAdapter {
   }
 
   async findByUserCode(userCode: string) {
-    const found = await this.model.findOne({ where: { userCode } });
+    const found = await (this.model as Repository<DeviceCode>).findOne({
+      where: { userCode },
+    });
     if (!found) return undefined;
     return {
       ...found.data,
